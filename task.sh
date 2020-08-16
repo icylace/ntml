@@ -129,7 +129,7 @@ task:lint:fix-dry-run() {
 task:release() {
   echo
   echo "Releasing..."
-  npx np
+  np
 }
 
 # ------------------------------------------------------------------------------
