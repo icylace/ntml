@@ -2,7 +2,6 @@
 
 task:index() {
   local tasks=(
-    '_snowpack'
     'build:dev'
     'build:prod'
     'clean'
@@ -10,7 +9,6 @@ task:index() {
     'lint'
     'lint:fix'
     'lint:fix-dry-run'
-    'prepare'
     'release'
     'test'
     'typecheck'
@@ -21,35 +19,6 @@ task:index() {
   for task in ${tasks[@]} ; do
     echo -e "\t$task"
   done
-}
-
-# ------------------------------------------------------------------------------
-
-task:_snowpack() {
-  if [ ! -d ./web_modules ] ; then
-    task:prepare
-  fi
-
-  echo
-  echo "Using web modules created by Snowpack..."
-
-  local modules=($(jq --raw-output '.imports | keys_unsorted | @sh' ./web_modules/import-map.json))
-
-  local changes=()
-  for module in "${modules[@]}" ; do
-    # Trim off the first and last characters which should be single quotes.
-    local m="${module:1:-1}"
-
-    # Escape slashes that would appear for scoped modules.
-    local e="${m//\//\\\/}"
-
-    changes+=("s/'$e';$/\"\/web_modules\/$e.js\"/g")
-  done
-
-  # https://superuser.com/a/462400/959677
-  local completeChange=$(IFS=$';' ; echo "${changes[*]}")
-
-  sed -i '' "$completeChange" ./dist/index.esm.js
 }
 
 # ------------------------------------------------------------------------------
@@ -65,7 +34,6 @@ task:build:dev() {
   [ $? != 0 ] && return
 
   npx rollup --config
-  task:_snowpack
 
   echo
   echo "Copying compiled JavaScript to the distribution folder..."
@@ -86,7 +54,6 @@ task:build:prod() {
   [ $? != 0 ] && return
 
   npx rollup --config --environment prod
-  task:_snowpack
 
   echo
   echo "Copying compiled JavaScript to the distribution folder..."
@@ -118,10 +85,10 @@ task:hard-refresh() {
   echo
   echo "Hard-refreshing dependencies..."
 
-  rm ./package-lock.json && rm -fr ./node_modules
+  rm ./package-lock.json && rm -fr ./node_modules && rm -fr ./output
 
-  npm install --save hyperapp
-  npm install --save-dev snowpack typescript rollup eslint terser prettier
+  # npm install --save hyperapp
+  npm install --save-dev typescript rollup eslint terser prettier
   npm install --save-dev eslint-plugin-import eslint-plugin-json eslint-plugin-node eslint-plugin-promise
   npm install --save-dev eslint-config-prettier eslint-plugin-prettier
   npm install --save-dev eslint-config-standard eslint-plugin-standard
@@ -129,7 +96,7 @@ task:hard-refresh() {
   npm install --save-dev @typescript-eslint/eslint-plugin @typescript-eslint/parser
   npm install --save-dev jest ts-jest
 
-  task:prepare
+  task:clean
 }
 
 # ------------------------------------------------------------------------------
@@ -154,15 +121,6 @@ task:lint:fix-dry-run() {
   echo
   echo "Linting and doing a dry-run of automatically fixing as much as possible..."
   npx eslint ./src --ext .js,.jsx,.ts,.tsx --fix-dry-run
-}
-
-# ------------------------------------------------------------------------------
-
-# https://www.snowpack.dev/#run-after-every-install
-task:prepare() {
-  echo
-  echo "Preparing web modules..."
-  npx snowpack
 }
 
 # ------------------------------------------------------------------------------

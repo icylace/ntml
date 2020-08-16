@@ -40,7 +40,7 @@ module.exports = {
   },
   rules: {
     "array-bracket-newline": ["error", "consistent"],
-    // "array-bracket-spacing": [ "error", "always" ],
+    // "array-bracket-spacing": ["error", "always"],
     "arrow-parens": ["error", "always"],
     "comma-dangle": [
       "error",
@@ -52,7 +52,7 @@ module.exports = {
         functions: "always-multiline",
       },
     ],
-    // , "comma-style": [ "error", "first" ]
+    // "comma-style": ["error", "first"],
     "func-call-spacing": ["error", "always", { allowNewlines: true }],
     "import/no-absolute-path": ["error", { esmodule: false }],
     indent: [
