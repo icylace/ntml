@@ -1,0 +1,70 @@
+{
+  "name": "@icylace/uy",
+  "version": "0.0.1-5",
+  "description": "A Hyperapp-based UI library.",
+  "keywords": [
+    "hyperapp"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/icylace/uy",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/icylace/uy"
+  },
+  "bugs": "https://github.com/icylace/uy/issues",
+  "author": {
+    "name": "Ron Martinez",
+    "email": "ramartin.net@gmail.com",
+    "url": "https://ramartin.net/"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
+  "browser": "./dist/index.esm.js",
+  "unpkg": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d",
+  "scripts": {
+    "build:dev": "./task.sh build:dev",
+    "build:prod": "./task.sh build:prod",
+    "clean": "./task.sh clean",
+    "lint": "./task.sh lint",
+    "lint:fix": "./task.sh lint:fix",
+    "lint:fix-dry-run": "./task.sh lint:fix-dry-run",
+    "release": "./task.sh release",
+    "test": "./task.sh test",
+    "typecheck": "./task.sh typecheck",
+    "watch:postcss": "./task.sh watch:postcss",
+    "watch:rollup": "./task.sh watch:rollup",
+    "watch:typescript": "./task.sh watch:typescript"
+  },
+  "dependencies": {
+    "hyperapp": "^2.0.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^3.9.0",
+    "@typescript-eslint/parser": "^3.9.0",
+    "eslint": "^7.7.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-import-resolver-typescript": "^2.2.1",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-json": "^2.1.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "jest": "^26.4.0",
+    "prettier": "^2.0.5",
+    "rollup": "^2.26.2",
+    "snowpack": "^2.7.7",
+    "terser": "^5.1.0",
+    "ts-jest": "^26.2.0",
+    "typescript": "^3.9.7"
+  },
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com/"
+  }
+}
