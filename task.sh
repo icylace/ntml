@@ -87,7 +87,7 @@ task:hard-refresh() {
 
   rm ./package-lock.json && rm -fr ./node_modules && rm -fr ./output
 
-  # npm install --save hyperapp
+  npm install --save hyperapp
   npm install --save-dev typescript rollup eslint terser prettier
   npm install --save-dev eslint-plugin-import eslint-plugin-json eslint-plugin-node eslint-plugin-promise
   npm install --save-dev eslint-config-prettier eslint-plugin-prettier

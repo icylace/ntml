@@ -38,7 +38,9 @@
     "watch:rollup": "./task.sh watch:rollup",
     "watch:typescript": "./task.sh watch:typescript"
   },
-  "dependencies": {},
+  "dependencies": {
+    "hyperapp": "^2.0.8"
+  },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^3.9.0",
     "@typescript-eslint/parser": "^3.9.0",
