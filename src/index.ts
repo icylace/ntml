@@ -21,22 +21,22 @@ const textual = (x: string | VNode): VNode =>
 const stuff = (x: Content): VNode[] =>
   Array.isArray (x) ? x.map (textual) : [textual (x as string | VNode)]
 
-const n = (type: string) => (...args: [Content] | [PropList, Content]): VDOM => {
-  if (Array.isArray (args[0]) || typeof args[0] !== "object" || (args[0] && "node" in args[0])) {
+const n = (type: string) => (contentOrPropList: Content | PropList, content?: Content): VDOM => {
+  if (Array.isArray (contentOrPropList) || typeof contentOrPropList !== "object" || (contentOrPropList && "node" in contentOrPropList)) {
     return {
       type,
       props: NO_PROPS,
-      children: stuff (args[0] as Content),
+      children: stuff (contentOrPropList as Content),
       node: undefined,
       key: undefined,
       tag: undefined,
     }
   }
-  const props = args[0] as PropList
+  const props = contentOrPropList as PropList
   return {
     type,
     props: props,
-    children: stuff (args[1]),
+    children: stuff (content),
     node: undefined,
     key: props.key,
     tag: undefined,
