@@ -1,7 +1,9 @@
-import type { VDOM, VNode } from "hyperapp"
+import type { PropList, VDOM, VNode } from "hyperapp"
+
+export type Content = string | VNode | readonly (string | VNode)[]
 
 const NO_PROPS = {}
-const NO_CHILDREN: any[] = []
+const NO_CHILDREN: never[] = []
 const TEXT_NODE = 3
 
 const text = (value: string): VDOM => ({
@@ -13,34 +15,33 @@ const text = (value: string): VDOM => ({
   tag: TEXT_NODE,
 })
 
-const textual = (x: string | VNode): VNode => {
-  return typeof x === "string" ? text (x) : x
-}
+const textual = (x: string | VNode): VNode =>
+  typeof x === "string" ? text (x) : x
 
-const stuff = (
-  x: string | VNode | readonly VNode[],
-): VNode | readonly VNode[] => {
-  return Array.isArray (x) ? x.map (textual) : [textual (x as string | VNode)]
-}
+const stuff = (x: Content): VNode[] =>
+  Array.isArray (x) ? x.map (textual) : [textual (x as string | VNode)]
 
-const n = (type: string) => (...args: readonly any[]): VDOM =>
-  Array.isArray (args[0]) || typeof args[0] !== "object" || "node" in args[0]
-    ? {
+const n = (type: string) => (...args: [Content] | [PropList, Content]): VDOM => {
+  if (Array.isArray (args[0]) || typeof args[0] !== "object" || (args[0] && "node" in args[0])) {
+    return {
       type,
       props: NO_PROPS,
-      children: stuff (args[0]),
+      children: stuff (args[0] as Content),
       node: undefined,
       key: undefined,
       tag: undefined,
-    } as VDOM
-    : {
-      type,
-      props: args[0],
-      children: stuff (args[1]),
-      node: undefined,
-      key: args[0].key,
-      tag: undefined,
-    } as VDOM
+    }
+  }
+  const props = args[0] as PropList
+  return {
+    type,
+    props: props,
+    children: stuff (args[1]),
+    node: undefined,
+    key: props.key,
+    tag: undefined,
+  }
+}
 
 export const a = n ("a")
 export const b = n ("b")
