@@ -22,8 +22,7 @@ const textual = (x: Content): VNode =>
 const stuff = (x: Contents): VNode[] =>
   Array.isArray (x) ? x.map (textual) : [textual (x as Content)]
 
-const n = (type: string) => (...args: [Contents] | [PropList, Contents]): VDOM => {
-  const x = args[0]
+const n = (type: string) => (x: Contents | PropList, y?: Contents): VDOM => {
   if (Array.isArray (x) || typeof x !== "object" || (x && "node" in x)) {
     return {
       type,
@@ -38,7 +37,7 @@ const n = (type: string) => (...args: [Contents] | [PropList, Contents]): VDOM =
   return {
     type,
     props: props,
-    children: stuff (args[1] as Content),
+    children: stuff (y as Content),
     node: undefined,
     key: props.key,
     tag: undefined,
