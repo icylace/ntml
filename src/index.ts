@@ -1,14 +1,14 @@
 import type { PropList, VDOM, VNode } from "hyperapp"
 
-export type Content = string | VNode
+export type Content = number | string | VNode
 export type Contents = Content | readonly Content[]
 
 const NO_PROPS = {}
 const NO_CHILDREN: never[] = []
 const TEXT_NODE = 3
 
-const text = (value: string): VDOM => ({
-  type: value,
+const text = (value: number | string): VDOM => ({
+  type: String (value),
   props: NO_PROPS,
   children: NO_CHILDREN,
   node: undefined,
@@ -17,23 +17,24 @@ const text = (value: string): VDOM => ({
 })
 
 const textual = (x: Content): VNode =>
-  typeof x === "string" ? text (x) : x
+  typeof x === "number" || typeof x === "string" ? text (x) : x
 
 const stuff = (x: Contents): VNode[] =>
   Array.isArray (x) ? x.map (textual) : [textual (x as Content)]
 
 const n = (type: string) => (...args: [Contents] | [PropList, Contents]): VDOM => {
-  if (Array.isArray (args[0]) || typeof args[0] !== "object" || (args[0] && "node" in args[0])) {
+  const x = args[0]
+  if (Array.isArray (x) || typeof x !== "object" || (x && "node" in x)) {
     return {
       type,
       props: NO_PROPS,
-      children: stuff (args[0] as Content),
+      children: stuff (x as Content),
       node: undefined,
       key: undefined,
       tag: undefined,
     }
   }
-  const props = args[0] as PropList
+  const props = x as PropList
   return {
     type,
     props: props,
