@@ -74,7 +74,7 @@ declare module "hyperapp" {
   // Virtual DOM properties will often correspond to HTML attributes.
   type Prop = bigint | boolean | number | string | symbol | null | undefined | Function | ClassProp | StyleProp
   type PropList = Readonly<ElementCreationOptions & EventActions & {
-    [k: string]: Prop
+    [_: string]: Prop
     class?: ClassProp
     key?: Key
     style?: StyleProp
