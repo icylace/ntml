@@ -11,7 +11,7 @@ declare module "hyperapp" {
 
   // A transition is either a state transformation with any effects to run, or
   // an action to take.
-  type Transition<S, P, D> = State<S> | StateWithEffects<S, D> | Action<S, P, D>
+  type Transition<S, P, D> = State<S> | StateWithEffects<S, D> | Action<P>
 
   // Application state is accessible in every view, action, and subscription.
   type State<S> = S
@@ -37,12 +37,12 @@ declare module "hyperapp" {
   // ---------------------------------------------------------------------------
 
   // A dispatched action handles an event in the context of the current state.
-  type Dispatch = <S, P, D>(action: Action<S, P, D>, props?: Payload<P>) => void
+  type Dispatch = <P>(action: Action<P>, props?: Payload<P>) => void
 
   // An action transforms existing state and can be wrapped by another action.
-  type Action<S, P, D>
-    = [Action<S, P, D>, Payload<P>]
-    | ((state: State<S>, props?: Payload<P>) => Transition<S, P, D>)
+  type Action<P>
+    = [Action<P>, Payload<P>]
+    | (<S, D>(state: State<S>, props?: Payload<P>) => Transition<S, P, D>)
 
   // A payload is data external to state that is given to a dispatched action.
   type Payload<P> = P
@@ -53,7 +53,7 @@ declare module "hyperapp" {
 
   // An effect is where side effects and any additional dispatching occur.
   // An effect used in a subscription should be able to unsubscribe.
-  type Effect = <D>(dispatch: Dispatch, props?: EffectData<D>) => void | Unsubscribe
+  type Effect = <D>(dispatch: Dispatch, props?: EffectData<D>) => void | Unsubscribe | Promise<void | Unsubscribe>
 
   // An effect is generally given additional data.
   type EffectData<D> = D
@@ -72,22 +72,27 @@ declare module "hyperapp" {
   }
 
   // Virtual DOM properties will often correspond to HTML attributes.
-  type Prop = bigint | boolean | null | number | string | symbol | undefined | Function | ClassProp | StyleProp
-  type PropList = Readonly<ElementCreationOptions & {
+  type Prop = bigint | boolean | number | string | symbol | null | undefined | Function | ClassProp | StyleProp
+  type PropList = Readonly<ElementCreationOptions & EventActions & {
     [k: string]: Prop
     class?: ClassProp
     key?: Key
     style?: StyleProp
   }>
 
+  // Actions are used as event handlers.
+  type EventActions = {
+    [K in keyof AdjustedGlobalEventHandlersEventMap]?: Action<AdjustedGlobalEventHandlersEventMap[K]>
+  }
+
   // A key can uniquely associate a virtual DOM node with a certain DOM element.
-  type Key = null | string | undefined
+  type Key = string | null | undefined
 
   // The `class` property represents an HTML class attribute string.
   type ClassProp = false | string | Record<string, boolean> | ClassProp[]
 
   // The `style` property represents inline CSS.
-  type StyleProp = Record<string, null | number | string>
+  type StyleProp = Record<string, number | string | null>
 
   // A virtual node is a convenience layer over a virtual DOM node.
   type VNode = boolean | null | undefined | VDOM
@@ -119,5 +124,100 @@ declare module "hyperapp" {
   function memo(view: View, props: PropList): Partial<VDOM>
 
   // The `text` function creates a virtual DOM node representing plain text.
-  function text(value: string | number, node?: Node): VDOM
+  function text(value: number | string, node?: Node): VDOM
+
+  // ---------------------------------------------------------------------------
+
+  // Due to current limitations with TypeScript (as of version 4.0), a modified
+  // copy of `GlobalEventHandlersEventMap` from TypeScript's "lib.dom.d.ts"
+  // definition file was put here to assist with defining `EventActions`.
+  type AdjustedGlobalEventHandlersEventMap = {
+    "onabort": UIEvent
+    "onanimationcancel": AnimationEvent
+    "onanimationend": AnimationEvent
+    "onanimationiteration": AnimationEvent
+    "onanimationstart": AnimationEvent
+    "onauxclick": MouseEvent
+    "onblur": FocusEvent
+    "oncancel": Event
+    "oncanplay": Event
+    "oncanplaythrough": Event
+    "onchange": Event
+    "onclick": MouseEvent
+    "onclose": Event
+    "oncontextmenu": MouseEvent
+    "oncuechange": Event
+    "ondblclick": MouseEvent
+    "ondrag": DragEvent
+    "ondragend": DragEvent
+    "ondragenter": DragEvent
+    "ondragexit": Event
+    "ondragleave": DragEvent
+    "ondragover": DragEvent
+    "ondragstart": DragEvent
+    "ondrop": DragEvent
+    "ondurationchange": Event
+    "onemptied": Event
+    "onended": Event
+    "onerror": ErrorEvent
+    "onfocus": FocusEvent
+    "onfocusin": FocusEvent
+    "onfocusout": FocusEvent
+    "ongotpointercapture": PointerEvent
+    "oninput": Event
+    "oninvalid": Event
+    "onkeydown": KeyboardEvent
+    "onkeypress": KeyboardEvent
+    "onkeyup": KeyboardEvent
+    "onload": Event
+    "onloadeddata": Event
+    "onloadedmetadata": Event
+    "onloadstart": Event
+    "onlostpointercapture": PointerEvent
+    "onmousedown": MouseEvent
+    "onmouseenter": MouseEvent
+    "onmouseleave": MouseEvent
+    "onmousemove": MouseEvent
+    "onmouseout": MouseEvent
+    "onmouseover": MouseEvent
+    "onmouseup": MouseEvent
+    "onpause": Event
+    "onplay": Event
+    "onplaying": Event
+    "onpointercancel": PointerEvent
+    "onpointerdown": PointerEvent
+    "onpointerenter": PointerEvent
+    "onpointerleave": PointerEvent
+    "onpointermove": PointerEvent
+    "onpointerout": PointerEvent
+    "onpointerover": PointerEvent
+    "onpointerup": PointerEvent
+    "onprogress": ProgressEvent
+    "onratechange": Event
+    "onreset": Event
+    "onresize": UIEvent
+    "onscroll": Event
+    "onsecuritypolicyviolation": SecurityPolicyViolationEvent
+    "onseeked": Event
+    "onseeking": Event
+    "onselect": Event
+    "onselectionchange": Event
+    "onselectstart": Event
+    "onstalled": Event
+    "onsubmit": Event
+    "onsuspend": Event
+    "ontimeupdate": Event
+    "ontoggle": Event
+    "ontouchcancel": TouchEvent
+    "ontouchend": TouchEvent
+    "ontouchmove": TouchEvent
+    "ontouchstart": TouchEvent
+    "ontransitioncancel": TransitionEvent
+    "ontransitionend": TransitionEvent
+    "ontransitionrun": TransitionEvent
+    "ontransitionstart": TransitionEvent
+    "onvolumechange": Event
+    "onwaiting": Event
+    "onwheel": WheelEvent
+  }
 }
