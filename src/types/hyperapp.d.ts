@@ -40,9 +40,9 @@ declare module "hyperapp" {
   type Dispatch = <P>(action: Action<P>, props?: Payload<P>) => void
 
   // An action transforms existing state and can be wrapped by another action.
-  type Action<P>
-    = [Action<P>, Payload<P>]
-    | (<S, D>(state: State<S>, props?: Payload<P>) => Transition<S, P, D>)
+  type Action<P> =
+    [Action<P>, Payload<P>] |
+    (<S, D>(state: State<S>, props?: Payload<P>) => Transition<S, P, D>)
 
   // A payload is data external to state that is given to a dispatched action.
   type Payload<P> = P
@@ -81,9 +81,8 @@ declare module "hyperapp" {
   }>
 
   // Actions are used as event handlers.
-  type EventActions = {
-    [K in keyof AdjustedGlobalEventHandlersEventMap]?: Action<AdjustedGlobalEventHandlersEventMap[K]>
-  }
+  type EventActions = { [K in keyof EventsMap]?: Action<EventsMap[K]> }
+  type EventsMap = OnHTMLElementEventMap & OnWindowEventMap & { onsearch: Event }
 
   // A key can uniquely associate a virtual DOM node with a certain DOM element.
   type Key = string | null | undefined
@@ -106,10 +105,7 @@ declare module "hyperapp" {
 
   // These are based on actual DOM node types:
   // https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType
-  const enum VDOMNodeType {
-    SSR = 1,
-    Text = 3,
-  }
+  const enum VDOMNodeType { SSR = 1, Text = 3 }
 
   // ---------------------------------------------------------------------------
 
@@ -128,10 +124,17 @@ declare module "hyperapp" {
 
   // ---------------------------------------------------------------------------
 
-  // Due to current limitations with TypeScript (as of version 4.0), a modified
-  // copy of `GlobalEventHandlersEventMap` from TypeScript's "lib.dom.d.ts"
-  // definition file was put here to assist with defining `EventActions`.
-  type AdjustedGlobalEventHandlersEventMap = {
+  // Due to current limitations with TypeScript (which will hopefully be
+  // addressed in the future: https://github.com/microsoft/TypeScript/pull/40336),
+  // modified copies of relevant event maps from TypeScript's "lib.dom.d.ts"
+  // definition file were put here to assist with defining `EventActions`.
+
+  type OnElementEventMap = {
+    "onfullscreenchange": Event
+    "onfullscreenerror": Event
+  }
+
+  type OnGlobalEventHandlersEventMap = {
     "onabort": UIEvent
     "onanimationcancel": AnimationEvent
     "onanimationend": AnimationEvent
@@ -219,5 +222,132 @@ declare module "hyperapp" {
     "onvolumechange": Event
     "onwaiting": Event
     "onwheel": WheelEvent
+  }
+
+  type OnDocumentAndElementEventHandlersEventMap = {
+    "oncopy": ClipboardEvent
+    "oncut": ClipboardEvent
+    "onpaste": ClipboardEvent
+  }
+
+  type OnHTMLElementEventMap = OnElementEventMap & OnGlobalEventHandlersEventMap & OnDocumentAndElementEventHandlersEventMap
+
+  type OnWindowEventHandlersEventMap = {
+    "onafterprint": Event
+    "onbeforeprint": Event
+    "onbeforeunload": BeforeUnloadEvent
+    "onhashchange": HashChangeEvent
+    "onlanguagechange": Event
+    "onmessage": MessageEvent
+    "onmessageerror": MessageEvent
+    "onoffline": Event
+    "ononline": Event
+    "onpagehide": PageTransitionEvent
+    "onpageshow": PageTransitionEvent
+    "onpopstate": PopStateEvent
+    "onrejectionhandled": PromiseRejectionEvent
+    "onstorage": StorageEvent
+    "onunhandledrejection": PromiseRejectionEvent
+    "onunload": Event
+  }
+
+  type OnWindowEventMap = OnGlobalEventHandlersEventMap & OnWindowEventHandlersEventMap & {
+    "onabort": UIEvent
+    "onafterprint": Event
+    "onbeforeprint": Event
+    "onbeforeunload": BeforeUnloadEvent
+    "onblur": FocusEvent
+    "oncanplay": Event
+    "oncanplaythrough": Event
+    "onchange": Event
+    "onclick": MouseEvent
+    "oncompassneedscalibration": Event
+    "oncontextmenu": MouseEvent
+    "ondblclick": MouseEvent
+    "ondevicelight": DeviceLightEvent
+    "ondevicemotion": DeviceMotionEvent
+    "ondeviceorientation": DeviceOrientationEvent
+    "ondeviceorientationabsolute": DeviceOrientationEvent
+    "ondrag": DragEvent
+    "ondragend": DragEvent
+    "ondragenter": DragEvent
+    "ondragleave": DragEvent
+    "ondragover": DragEvent
+    "ondragstart": DragEvent
+    "ondrop": DragEvent
+    "ondurationchange": Event
+    "onemptied": Event
+    "onended": Event
+    "onerror": ErrorEvent
+    "onfocus": FocusEvent
+    "onhashchange": HashChangeEvent
+    "oninput": Event
+    "oninvalid": Event
+    "onkeydown": KeyboardEvent
+    "onkeypress": KeyboardEvent
+    "onkeyup": KeyboardEvent
+    "onload": Event
+    "onloadeddata": Event
+    "onloadedmetadata": Event
+    "onloadstart": Event
+    "onmessage": MessageEvent
+    "onmousedown": MouseEvent
+    "onmouseenter": MouseEvent
+    "onmouseleave": MouseEvent
+    "onmousemove": MouseEvent
+    "onmouseout": MouseEvent
+    "onmouseover": MouseEvent
+    "onmouseup": MouseEvent
+    "onmousewheel": Event
+    "onMSGestureChange": Event
+    "onMSGestureDoubleTap": Event
+    "onMSGestureEnd": Event
+    "onMSGestureHold": Event
+    "onMSGestureStart": Event
+    "onMSGestureTap": Event
+    "onMSInertiaStart": Event
+    "onMSPointerCancel": Event
+    "onMSPointerDown": Event
+    "onMSPointerEnter": Event
+    "onMSPointerLeave": Event
+    "onMSPointerMove": Event
+    "onMSPointerOut": Event
+    "onMSPointerOver": Event
+    "onMSPointerUp": Event
+    "onoffline": Event
+    "ononline": Event
+    "onorientationchange": Event
+    "onpagehide": PageTransitionEvent
+    "onpageshow": PageTransitionEvent
+    "onpause": Event
+    "onplay": Event
+    "onplaying": Event
+    "onpopstate": PopStateEvent
+    "onprogress": ProgressEvent<Window>
+    "onratechange": Event
+    "onreadystatechange": ProgressEvent<Window>
+    "onreset": Event
+    "onresize": UIEvent
+    "onscroll": Event
+    "onseeked": Event
+    "onseeking": Event
+    "onselect": Event
+    "onstalled": Event
+    "onstorage": StorageEvent
+    "onsubmit": Event
+    "onsuspend": Event
+    "ontimeupdate": Event
+    "onunload": Event
+    "onvolumechange": Event
+    "onvrdisplayactivate": Event
+    "onvrdisplayblur": Event
+    "onvrdisplayconnect": Event
+    "onvrdisplaydeactivate": Event
+    "onvrdisplaydisconnect": Event
+    "onvrdisplayfocus": Event
+    "onvrdisplaypointerrestricted": Event
+    "onvrdisplaypointerunrestricted": Event
+    "onvrdisplaypresentchange": Event
+    "onwaiting": Event
   }
 }
