@@ -24,7 +24,7 @@
   "browser": "./dist/index.esm.js",
   "unpkg": "./dist/index.js",
   "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "types": "./types",
   "scripts": {
     "build:dev": "./task.sh build:dev",
     "build:prod": "./task.sh build:prod",
@@ -42,24 +42,24 @@
     "hyperapp": "^2.0.8"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^3.9.0",
-    "@typescript-eslint/parser": "^3.9.0",
-    "eslint": "^7.7.0",
+    "@typescript-eslint/eslint-plugin": "^4.1.0",
+    "@typescript-eslint/parser": "^4.1.0",
+    "eslint": "^7.8.1",
     "eslint-config-prettier": "^6.11.0",
     "eslint-config-standard": "^14.1.1",
-    "eslint-import-resolver-typescript": "^2.2.1",
+    "eslint-import-resolver-typescript": "^2.3.0",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-json": "^2.1.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "jest": "^26.4.0",
-    "prettier": "^2.0.5",
-    "rollup": "^2.26.3",
-    "terser": "^5.1.0",
-    "ts-jest": "^26.2.0",
-    "typescript": "^3.9.7"
+    "jest": "^26.4.2",
+    "prettier": "^2.1.1",
+    "rollup": "^2.26.10",
+    "terser": "^5.3.0",
+    "ts-jest": "^26.3.0",
+    "typescript": "^4.0.2"
   },
   "publishConfig": {
     "access": "public"
