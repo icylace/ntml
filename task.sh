@@ -4,6 +4,7 @@ task:index() {
   local tasks=(
     'build:dev'
     'build:prod'
+    'check'
     'clean'
     'hard-refresh'
     'lint'
@@ -11,7 +12,6 @@ task:index() {
     'lint:fix-dry-run'
     'release'
     'test'
-    'typecheck'
   )
 
   echo "Available tasks:"
@@ -69,6 +69,14 @@ task:build:prod() {
   echo "Minifying and gzipping UMD modules..."
   npx terser --ecma 6 --compress --mangle --output ./dist/index.umd.min.js -- ./dist/index.umd.js
   gzip --best --to-stdout ./dist/index.umd.min.js > ./dist/index.umd.min.js.gz
+}
+
+# ------------------------------------------------------------------------------
+
+task:check() {
+  echo
+  echo "Typechecking TypeScript code..."
+  npx tsc --noEmit --incremental false
 }
 
 # ------------------------------------------------------------------------------
@@ -138,14 +146,6 @@ task:test() {
   # TODO:
   # echo "Error: no test specified" && exit 1
   return
-}
-
-# ------------------------------------------------------------------------------
-
-task:typecheck() {
-  echo
-  echo "Typechecking TypeScript code..."
-  npx tsc --noEmit --incremental false
 }
 
 # ------------------------------------------------------------------------------
