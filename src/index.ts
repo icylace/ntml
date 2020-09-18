@@ -1,13 +1,13 @@
 import type { PropList, VDOM, VNode } from "hyperapp"
 
-export type Content<S, D = unknown> = number | string | VNode<S, D>
-export type Contents<S, D = unknown> = Content<S, D> | readonly Content<S, D>[]
+export type Content<S> = number | string | VNode<S>
+export type Contents<S> = Content<S> | readonly Content<S>[]
 
 const NO_PROPS = {}
 const NO_CHILDREN: never[] = []
 const TEXT_NODE = 3
 
-const text = <S, D = unknown>(value: number | string): VDOM<S, D> => ({
+const text = <S>(value: number | string): VDOM<S> => ({
   type: String (value),
   props: NO_PROPS,
   children: NO_CHILDREN,
@@ -16,33 +16,33 @@ const text = <S, D = unknown>(value: number | string): VDOM<S, D> => ({
   tag: TEXT_NODE,
 })
 
-const textual = <S, D = unknown>(x: Content<S, D>): VNode<S, D> =>
+const textual = <S>(x: Content<S>): VNode<S> =>
   typeof x === "number" || typeof x === "string" ? text (x) : x
 
-const stuff = <S, D = unknown>(x: Contents<S, D>): VNode<S, D>[] => {
+const stuff = <S>(x: Contents<S>): VNode<S>[] => {
   if (Array.isArray (x)) {
-    const xs = x as Content<S, D>[]
+    const xs = x as Content<S>[]
     return xs.map (textual)
   }
-  return [textual (x as Content<S, D>)]
+  return [textual (x as Content<S>)]
 }
 
-const n = (type: string) => <S, D = unknown>(x: Contents<S, D> | PropList<S, D>, y?: Contents<S, D>): VDOM<S, D> => {
+const n = (type: string) => <S>(x: Contents<S> | PropList<S>, y?: Contents<S>): VDOM<S> => {
   if (Array.isArray (x) || typeof x !== "object" || (x && "node" in x)) {
     return {
       type,
       props: NO_PROPS,
-      children: stuff (x as Content<S, D>),
+      children: stuff (x as Content<S>),
       node: undefined,
       key: undefined,
       tag: undefined,
     }
   }
-  const props = x as PropList<S, D>
+  const props = x as PropList<S>
   return {
     type,
     props: props,
-    children: stuff (y as Content<S, D>),
+    children: stuff (y as Content<S>),
     node: undefined,
     key: props.key,
     tag: undefined,
