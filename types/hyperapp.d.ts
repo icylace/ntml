@@ -3,7 +3,7 @@
 declare module "hyperapp" {
   // The `app` function initiates a Hyperapp application. `app` along with
   // effects are the only places where side effects are allowed.
-  function app<S, P = unknown>(props: App<S, P>): Dispatch<S, P>
+  function app<S>(props: App<S>): Dispatch<S, unknown>
 
   // The `h` function builds a virtual DOM node.
   function h<S>(
@@ -22,13 +22,13 @@ declare module "hyperapp" {
 
   // A Hyperapp application instance has an initial state and a base view.
   // It must also be mounted over an available DOM element.
-  type App<S, P>
+  type App<S>
     = Readonly<{
-      init: Transition<S> | Action<S, P>
+      init: Transition<S> | Action<S, unknown>
       view: View<S>
       node: Node
       subscriptions?: Subscription<S>
-      middleware?: Middleware<S, P>
+      middleware?: Middleware<S>
     }>
 
   // A view builds a virtual DOM node representation of the application state.
@@ -38,13 +38,13 @@ declare module "hyperapp" {
   type Subscription<S> = (state: State<S>) => Subscriber<S>[]
 
   // A subscriber reacts to subscription updates.
-  type Subscriber<S> = boolean | undefined | Effect<S> | Unsubscribe
+  type Subscriber<S, D = unknown> = boolean | undefined | Effect<S, D> | Unsubscribe
 
   // A subscriber ideally provides a function that cancels itself properly.
   type Unsubscribe = () => void
 
   // Middleware allows for custom processing during dispatching.
-  type Middleware<S, P> = (dispatch: Dispatch<S, P>) => Dispatch<S, P>
+  type Middleware<S> = (dispatch: Dispatch<S, unknown>) => Dispatch<S, unknown>
 
   // ---------------------------------------------------------------------------
 
@@ -53,7 +53,7 @@ declare module "hyperapp" {
 
   // An action transforms existing state and/or wraps another action.
   type Action<S, P>
-    = ((state: State<S>, props?: Payload<P>) => Transition<S> | Action<S, P>)
+    = ((state: State<S>, props?: Payload<P>) => Transition<S> | Action<S, unknown>)
     | ActionDescriptor<S, P>
 
   // An action descriptor describes an action and any payload for it.
@@ -69,16 +69,16 @@ declare module "hyperapp" {
   type State<S> = S
 
   // Transformed state can be paired with a list of effects to run.
-  type StateWithEffects<S> = [State<S>, ...EffectDescriptor<S>[]]
+  type StateWithEffects<S, D = any> = [State<S>, ...EffectDescriptor<S, D>[]]
 
   // An effect descriptor describes how an effect should be invoked.
   // A function that creates this is called an effect constructor.
-  type EffectDescriptor<S> = [Effect<S>, Payload<unknown>]
+  type EffectDescriptor<S, D> = [Effect<S, D>, Payload<D>]
 
   // An effect is where side effects and any additional dispatching occur.
   // An effect used in a subscription should be able to unsubscribe.
-  type Effect<S>
-    = (dispatch: Dispatch<S, unknown>, props?: Payload<unknown>) =>
+  type Effect<S, D>
+    = (dispatch: Dispatch<S, any>, props?: Payload<D>) =>
         void | Unsubscribe | Promise<undefined | Unsubscribe>
 
   // ---------------------------------------------------------------------------
@@ -135,10 +135,11 @@ declare module "hyperapp" {
 
   // ---------------------------------------------------------------------------
 
-  // Due to current limitations with TypeScript (which should get resolved in
-  // the future: https://github.com/microsoft/TypeScript/pull/40336), here is
-  // a collection of modified copies of relevant event maps from TypeScript's
-  // "lib.dom.d.ts" definition file to assist with defining `EventActions`:
+  // Due to current limitations with TypeScript (which will get resolved in the
+  // future: https://devblogs.microsoft.com/typescript/announcing-typescript-4-1-beta/#key-remapping-mapped-types),
+  // here is a collection of modified copies of relevant event maps from
+  // TypeScript's "lib.dom.d.ts" definition file to assist with defining
+  // `EventActions`:
 
   type OnElementEventMap = {
     "onfullscreenchange": Event
