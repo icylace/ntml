@@ -21,10 +21,8 @@ const textual = <S>(x: Content<S>): VNode<S> =>
 const stuff = <S>(x: Content<S> | Content<S>[]): VNode<S>[] =>
   Array.isArray(x) ? x.map(textual) : [textual(x)]
 
-const n = (type: string) => {
-  function tag<S>(x: Content<S> | Content<S>[]): VDOM<S>
-  function tag<S>(x: PropList<S>, y: Content<S> | Content<S>[]): VDOM<S>
-  function tag<S>(x: Content<S> | Content<S>[] | PropList<S>, y?: Content<S> | Content<S>[]): VDOM<S> {
+const n = (type: string) =>
+  <S>(x: Content<S> | Content<S>[] | PropList<S>, y?: Content<S> | Content<S>[]): VDOM<S> => {
     // Check if we're given a property list.
     if (!Array.isArray(x) && typeof x === "object" && x != null && !("node" in x)) {
       return {
@@ -45,8 +43,6 @@ const n = (type: string) => {
       tag: undefined,
     }
   }
-  return tag
-}
 
 export const a = n("a")
 export const b = n("b")
