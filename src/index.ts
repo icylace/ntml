@@ -21,10 +21,14 @@ const textual = <S>(x: Content<S>): VNode<S> =>
 const stuff = <S>(x: Content<S> | Content<S>[]): VNode<S>[] =>
   Array.isArray(x) ? x.map(textual) : [textual(x)]
 
-const n = (type: string) =>
-  <S>(x: Content<S> | Content<S>[] | PropList<S>, y?: Content<S> | Content<S>[]): VDOM<S> => {
-    // Check if we're given a property list.
-    if (!Array.isArray(x) && typeof x === "object" && x != null && !("node" in x)) {
+const givenPropList = <S>(x: Content<S> | Content<S>[] | PropList<S>): x is PropList<S> =>
+  typeof x === "object" && x != null && !Array.isArray(x) && !("node" in x)
+
+const n = (type: string) => {
+  function tag<S>(x: Content<S> | Content<S>[]): VDOM<S>
+  function tag<S>(x: PropList<S>, y?: Content<S> | Content<S>[]): VDOM<S>
+  function tag<S>(x: Content<S> | Content<S>[] | PropList<S>, y?: Content<S> | Content<S>[]): VDOM<S> {
+    if (givenPropList(x)) {
       return {
         type,
         props: x,
@@ -37,12 +41,14 @@ const n = (type: string) =>
     return {
       type,
       props: NO_PROPS,
-      children: stuff(x as Content<S> | Content<S>[]),
+      children: stuff(x),
       node: undefined,
       key: undefined,
       tag: undefined,
     }
   }
+  return tag
+}
 
 export const a = n("a")
 export const b = n("b")
@@ -142,3 +148,22 @@ export const progress = n("progress")
 export const textarea = n("textarea")
 export const blockquote = n("blockquote")
 export const figcaption = n("figcaption")
+
+// TODO:
+// // Tests.
+// let _
+// _ = <S>(): VDOM<S> => div("foo")
+// _ = <S>(): VDOM<S> => div(["foo"])
+// _ = <S>(): VDOM<S> => div(div("foo"))
+// _ = <S>(): VDOM<S> => div(div(["foo"]))
+// _ = <S>(): VDOM<S> => div([div("foo")])
+// _ = <S>(): VDOM<S> => div([div(["foo"])])
+// _ = <S>(): VDOM<S> => div<S>([div(["foo"])])
+// _ = <S>(): VDOM<S> => div([div<S>(["foo"])])
+// _ = <S>(): VDOM<S> => div({ class: "bar" }, "foo")
+// _ = <S>(): VDOM<S> => div({ class: "bar" }, ["foo"])
+// _ = <S>(): VDOM<S> => div({ class: "bar" }, div("foo"))
+// _ = <S>(): VDOM<S> => div({ class: "bar" }, div(["foo"]))
+// _ = <S>(): VDOM<S> => div({ class: "bar" }, [div("foo")])
+// _ = <S>(): VDOM<S> => div({ class: "bar" }, [div(["foo"])])
+// _
