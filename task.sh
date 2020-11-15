@@ -106,7 +106,9 @@ task:hard-refresh() {
   echo
   echo "Hard-refreshing dependencies..."
 
-  rm ./package-lock.json && rm -fr ./node_modules && rm -fr ./output
+  rm ./package-lock.json
+  rm -fr ./node_modules
+  rm -fr ./output
 
   update_json '.dependencies = {} | .devDependencies = {}' ./package.json
 
