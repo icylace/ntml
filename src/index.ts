@@ -1,5 +1,3 @@
-/*! by Ron Martinez */
-
 import type { PropList, VDOM, VNode } from "hyperapp"
 
 export type Content<S> = number | string | VNode<S>
