@@ -3,7 +3,7 @@ import type { PropList, VDOM, VNode } from "hyperapp"
 export type Content<S> = number | string | VNode<S> | (() => VDOM<S>)
 
 const NO_PROPS = {}
-const NO_CHILDREN: never[] = []
+const NO_CHILDREN: [] = []
 const TEXT_NODE = 3
 
 const text = <S>(value: number | string): VDOM<S> => ({
