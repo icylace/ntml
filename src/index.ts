@@ -1,6 +1,6 @@
 import type { PropList, VDOM, VNode } from "hyperapp"
 
-export type Content<S> = number | string | VNode<S>
+export type Content<S> = number | string | VNode<S> | (() => VDOM<S>)
 
 const NO_PROPS = {}
 const NO_CHILDREN: never[] = []
@@ -15,14 +15,19 @@ const text = <S>(value: number | string): VDOM<S> => ({
   tag: TEXT_NODE,
 })
 
-const textual = <S>(x: Content<S>): VNode<S> =>
-  typeof x === "number" || typeof x === "string" ? text(x) : x
+const content = <S>(x: Content<S>): VNode<S> => {
+  if (typeof x === "number" || typeof x === "string") return text(x)
+  if (typeof x === "function") return x()
+  return x
+}
 
-const stuff = <S>(x: Content<S> | Content<S>[]): VNode<S>[] =>
-  Array.isArray(x) ? x.map(textual) : [textual(x)]
+const group = <S>(x: Content<S> | Content<S>[]): VNode<S>[] => {
+  return Array.isArray(x) ? x.map(content) : [content(x)]
+}
 
-const givenPropList = <S>(x: Content<S> | Content<S>[] | PropList<S>): x is PropList<S> =>
-  typeof x === "object" && x != null && !Array.isArray(x) && !("node" in x)
+const givenPropList = <S>(x: Content<S> | Content<S>[] | PropList<S>): x is PropList<S> => {
+  return typeof x === "object" && x != null && !Array.isArray(x) && !("node" in x)
+}
 
 const n = (type: string) => {
   function tag<S>(x: Content<S> | Content<S>[]): VDOM<S>
@@ -32,7 +37,7 @@ const n = (type: string) => {
       return {
         type,
         props: x,
-        children: stuff(y),
+        children: group(y),
         node: undefined,
         key: x.key,
         tag: undefined,
@@ -41,7 +46,7 @@ const n = (type: string) => {
     return {
       type,
       props: NO_PROPS,
-      children: stuff(x),
+      children: group(x),
       node: undefined,
       key: undefined,
       tag: undefined,
