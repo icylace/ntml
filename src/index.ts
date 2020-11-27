@@ -56,6 +56,19 @@ const n = (type: string) => {
   return tag
 }
 
+export const isContent = <S>(x: any): x is Content<S> => {
+  return Array.isArray(x) ? x.every(isStuff) : isStuff(x)
+}
+
+export const isStuff = <S>(x: any): x is Stuff<S> => {
+  return x == null
+    || typeof x === "boolean"
+    || typeof x === "function"
+    || typeof x === "number"
+    || typeof x === "string"
+    || (typeof x === "object" && "node" in x)
+}
+
 export const a = n("a")
 export const b = n("b")
 export const i = n("i")
