@@ -16,42 +16,38 @@ const text = <S>(value: number | string): VDOM<S> => ({
   tag: TEXT_NODE,
 })
 
-const stuff = <S>(x: Stuff<S>): VNode<S> => {
-  if (typeof x === "number" || typeof x === "string") return text(x)
-  if (typeof x === "function") return x()
-  return x
-}
+const stuff = <S>(x: Stuff<S>): VNode<S> =>
+  typeof x === "number" || typeof x === "string" ? text(x)
+  : typeof x === "function" ? x()
+  : x
 
-const group = <S>(x: Content<S>): VNode<S>[] => {
-  return Array.isArray(x) ? x.map(stuff) : [stuff(x)]
-}
+const group = <S>(x: Content<S>): VNode<S>[] =>
+  Array.isArray(x) ? x.map(stuff) : [stuff(x)]
 
-const givenPropList = <S>(x: Content<S> | PropList<S>): x is PropList<S> => {
-  return typeof x === "object" && x != null && !Array.isArray(x) && !("node" in x)
-}
+const givenPropList = <S>(x: Content<S> | PropList<S>): x is PropList<S> =>
+  typeof x === "object" && x != null && !Array.isArray(x) && !("node" in x)
 
 const n = (type: string) => {
   function tag<S>(x: Content<S>): VDOM<S>
   function tag<S>(x: PropList<S>, y?: Content<S>): VDOM<S>
   function tag<S>(x: Content<S> | PropList<S>, y?: Content<S>): VDOM<S> {
-    if (givenPropList(x)) {
-      return {
-        type,
-        props: x,
-        children: group(y),
-        node: undefined,
-        key: x.key,
-        tag: undefined,
-      }
-    }
-    return {
-      type,
-      props: NO_PROPS,
-      children: group(x),
-      node: undefined,
-      key: undefined,
-      tag: undefined,
-    }
+    return givenPropList(x)
+      ? {
+          type,
+          props: x,
+          children: group(y),
+          node: undefined,
+          key: x.key,
+          tag: undefined,
+        }
+      : {
+          type,
+          props: NO_PROPS,
+          children: group(x),
+          node: undefined,
+          key: undefined,
+          tag: undefined,
+        }
   }
   return tag
 }
@@ -155,22 +151,19 @@ export const textarea = n("textarea")
 export const blockquote = n("blockquote")
 export const figcaption = n("figcaption")
 
-export const isContent = <S>(x: any): x is Content<S> => {
-  return Array.isArray(x) ? x.every(isStuff) : isStuff(x)
-}
+export const isContent = <S>(x: any): x is Content<S> =>
+  Array.isArray(x) ? x.every(isStuff) : isStuff(x)
 
-export const isStuff = <S>(x: any): x is Stuff<S> => {
-  return x == null
+export const isStuff = <S>(x: any): x is Stuff<S> =>
+  x == null
     || typeof x === "boolean"
     || typeof x === "function"
     || typeof x === "number"
     || typeof x === "string"
     || isVDOM(x)
-}
 
-export const isVDOM = <S>(x: any): x is VDOM<S> => {
-  return typeof x === "object" && "node" in x
-}
+export const isVDOM = <S>(x: any): x is VDOM<S> =>
+  typeof x === "object" && "node" in x
 
 // TODO:
 // // Tests.
