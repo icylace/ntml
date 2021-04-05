@@ -1,55 +1,30 @@
-import type { PropList, VDOM, VNode } from "hyperapp"
+import type { MaybeVDOM, PropList, VDOM } from "hyperapp"
 
-export type Stuff<S> = number | string | VNode<S> | (() => VDOM<S>)
+import { h, text } from "hyperapp"
+
+export type Stuff<S> = number | string | MaybeVDOM<S> | (() => VDOM<S>)
 export type Content<S> = Stuff<S> | Stuff<S>[]
 
-const NO_PROPS = {}
-const NO_CHILDREN: [] = []
-const TEXT_NODE = 3
-
-const text = <S>(value: number | string): VDOM<S> => ({
-  type: String(value),
-  props: NO_PROPS,
-  children: NO_CHILDREN,
-  node: undefined,
-  key: null,
-  tag: TEXT_NODE,
-})
-
-const stuff = <S>(x: Stuff<S>): VNode<S> =>
+const stuff = <S>(x: Stuff<S>): MaybeVDOM<S> =>
   typeof x === "number" || typeof x === "string" ? text(x)
   : typeof x === "function" ? x()
   : x
 
-const group = <S>(x: Content<S>): VNode<S>[] =>
+const group = <S>(x: Content<S>): MaybeVDOM<S>[] =>
   Array.isArray(x) ? x.map(stuff) : [stuff(x)]
 
 const givenPropList = <S>(x: Content<S> | PropList<S>): x is PropList<S> =>
   typeof x === "object" && x != null && !Array.isArray(x) && !("node" in x)
 
-const n = (type: string) => {
-  function tag<S>(x: Content<S>): VDOM<S>
-  function tag<S>(x: PropList<S>, y?: Content<S>): VDOM<S>
-  function tag<S>(x: Content<S> | PropList<S>, y?: Content<S>): VDOM<S> {
+const n = (tag: string) => {
+  function element<S>(x: Content<S>): VDOM<S>
+  function element<S>(x: PropList<S>, y?: Content<S>): VDOM<S>
+  function element<S>(x: Content<S> | PropList<S>, y?: Content<S>): VDOM<S> {
     return givenPropList(x)
-      ? {
-          type,
-          props: x,
-          children: group(y),
-          node: undefined,
-          key: x.key,
-          tag: undefined,
-        }
-      : {
-          type,
-          props: NO_PROPS,
-          children: group(x),
-          node: undefined,
-          key: undefined,
-          tag: undefined,
-        }
+      ? h(tag, x, group(y))
+      : h(tag, {}, group(x))
   }
-  return tag
+  return element
 }
 
 export const a = n("a")
