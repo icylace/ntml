@@ -20,9 +20,7 @@ const n = (tag: string) => {
   function element<S>(x: Content<S>): VDOM<S>
   function element<S>(x: PropList<S>, y?: Content<S>): VDOM<S>
   function element<S>(x: Content<S> | PropList<S>, y?: Content<S>): VDOM<S> {
-    return givenPropList(x)
-      ? h(tag, x, group(y))
-      : h(tag, {}, group(x))
+    return givenPropList(x) ? h(tag, x, group(y)) : h(tag, {}, group(x))
   }
   return element
 }
