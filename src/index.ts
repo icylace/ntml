@@ -10,7 +10,7 @@ const stuff = <S>(x: Stuff<S>): MaybeVDOM<S> =>
   : typeof x === "function" ? x()
   : x
 
-const group = <S>(x: Content<S>): MaybeVDOM<S>[] =>
+const group = <S>(x: Content<S>): readonly MaybeVDOM<S>[] =>
   Array.isArray(x) ? x.map(stuff) : [stuff(x)]
 
 const givenPropList = <S>(x: Content<S> | PropList<S>): x is PropList<S> =>
