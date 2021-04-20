@@ -1,29 +1,54 @@
-import type { MaybeVDOM, PropList, VDOM } from "hyperapp"
+import type { MaybeVDOM, PropList, VDOM, ValidateCustomPayloads } from "hyperapp"
 
 import { h, text } from "hyperapp"
 
-export type Stuff<S> = number | string | MaybeVDOM<S> | (() => VDOM<S>)
+export type Stuff<S> = number | string | MaybeVDOM<S> | ((..._: any[]) => VDOM<S>)
 export type Content<S> = Stuff<S> | Stuff<S>[]
+export type ValidatedPropList<S, C> = ValidateCustomPayloads<S, C> & PropList<S>
 
 const stuff = <S>(x: Stuff<S>): MaybeVDOM<S> =>
   typeof x === "number" || typeof x === "string" ? text(x)
   : typeof x === "function" ? x()
   : x
 
-const group = <S>(x: Content<S>): readonly MaybeVDOM<S>[] =>
-  Array.isArray(x) ? x.map(stuff) : [stuff(x)]
+const group = <S>(x: Content<S>): MaybeVDOM<S> | readonly MaybeVDOM<S>[] =>
+  Array.isArray(x) ? x.map(a => stuff(a)) : stuff<S>(x)
 
 const givenPropList = <S>(x: Content<S> | PropList<S>): x is PropList<S> =>
   typeof x === "object" && x != null && !Array.isArray(x) && !("node" in x)
 
-const n = (tag: string) => {
-  function element<S>(x: Content<S>): VDOM<S>
-  function element<S>(x: PropList<S>, y?: Content<S>): VDOM<S>
-  function element<S>(x: Content<S> | PropList<S>, y?: Content<S>): VDOM<S> {
-    return givenPropList(x) ? h(tag, x, group(y)) : h(tag, {}, group(x))
+export const n = <T = never, C = unknown>(tag: string) => {
+  function node<S>(x: Content<T | S>): VDOM<T | S>
+  function node<S>(x: ValidatedPropList<T | S, C>, children?: Content<T | S>): VDOM<T | S>
+  function node<S>(x: ValidatedPropList<T | S, C> | Content<T | S>, children?: Content<T | S>): VDOM<T | S> {
+    return givenPropList<T | S>(x)
+      ? h<T | S>(tag, x, group(children))
+      : h<T | S>(tag, {}, group(x))
   }
-  return element
+  return node
 }
+
+export const typedN = <S>() => <C = unknown>(tag: string) => {
+  function node(x: Content<S>): VDOM<S>
+  function node(x: ValidatedPropList<S, C>, children?: Content<S>): VDOM<S>
+  function node(x: ValidatedPropList<S, C> | Content<S>, children?: Content<S>): VDOM<S> {
+    return givenPropList<S>(x)
+      ? h<S>(tag, x, group(children))
+      : h<S>(tag, {}, group(x))
+  }
+  return node
+}
+
+// export const typedN = <S>() => (tag: string) => n<S>(tag)
+
+// export interface TypedN<S> {
+//   <_ extends never, C = unknown>(tag: string): {
+//     function node<_>(x: Content<S>): VDOM<S>
+//     function node<_>(x: ValidatedPropList<S, C>, children?: Content<S>): VDOM<S>
+//     function node<_>(x: ValidatedPropList<S, C> | Content<S>, children?: Content<S>): VDOM<S>
+//     // (x: ValidatedPropList<S, C> | Content<S>, children?: Content<S>) => VDOM<S>
+//   }
+// }
 
 export const a = n("a")
 export const b = n("b")
