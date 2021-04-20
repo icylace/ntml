@@ -1,6 +1,6 @@
 {
   "name": "ntml",
-  "version": "0.1.49",
+  "version": "0.1.50",
   "description": "A fork of @hyperapp/html.",
   "keywords": [
     "hyperapp"
