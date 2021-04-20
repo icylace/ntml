@@ -152,6 +152,7 @@ task:reset() {
   npm install --save-dev eslint-config-standard eslint-plugin-standard
   npm install --save-dev eslint-import-resolver-typescript
   npm install --save-dev @typescript-eslint/eslint-plugin @typescript-eslint/parser
+  npm install --save-dev tsd
   # npm install --save-dev jest ts-jest
 
   task:clean
