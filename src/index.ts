@@ -17,13 +17,13 @@ const group = <S>(x: Content<S>): MaybeVDOM<S> | readonly MaybeVDOM<S>[] =>
 const givenPropList = <S>(x: Content<S> | PropList<S>): x is PropList<S> =>
   typeof x === "object" && x != null && !Array.isArray(x) && !("node" in x)
 
-export const n = <T = never, C = unknown>(tag: string) => {
-  function node<S>(x: Content<T | S>): VDOM<T | S>
-  function node<S>(x: ValidatedPropList<T | S, C>, children?: Content<T | S>): VDOM<T | S>
-  function node<S>(x: ValidatedPropList<T | S, C> | Content<T | S>, children?: Content<T | S>): VDOM<T | S> {
-    return givenPropList<T | S>(x)
-      ? h<T | S>(tag, x, group(children))
-      : h<T | S>(tag, {}, group(x))
+export const n = <C = unknown>(tag: string) => {
+  function node<S>(x: Content<S>): VDOM<S>
+  function node<S>(x: ValidatedPropList<S, C>, children?: Content<S>): VDOM<S>
+  function node<S>(x: ValidatedPropList<S, C> | Content<S>, children?: Content<S>): VDOM<S> {
+    return givenPropList<S>(x)
+      ? h<S>(tag, x, group(children))
+      : h<S>(tag, {}, group(x))
   }
   return node
 }
