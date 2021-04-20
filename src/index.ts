@@ -39,17 +39,6 @@ export const typedN = <S>() => <C = unknown>(tag: string) => {
   return node
 }
 
-// export const typedN = <S>() => (tag: string) => n<S>(tag)
-
-// export interface TypedN<S> {
-//   <_ extends never, C = unknown>(tag: string): {
-//     function node<_>(x: Content<S>): VDOM<S>
-//     function node<_>(x: ValidatedPropList<S, C>, children?: Content<S>): VDOM<S>
-//     function node<_>(x: ValidatedPropList<S, C> | Content<S>, children?: Content<S>): VDOM<S>
-//     // (x: ValidatedPropList<S, C> | Content<S>, children?: Content<S>) => VDOM<S>
-//   }
-// }
-
 export const a = n("a")
 export const b = n("b")
 export const i = n("i")
