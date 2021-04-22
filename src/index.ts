@@ -1,26 +1,26 @@
-import type { MaybeVDOM, PropList, VDOM, ValidateCustomPayloads } from "hyperapp"
+import type { CustomPayloads, MaybeVNode, Props, VNode } from "hyperapp"
 
 import { h, text } from "hyperapp"
 
-export type Stuff<S> = number | string | MaybeVDOM<S> | ((..._: any[]) => VDOM<S>)
+export type Stuff<S> = number | string | MaybeVNode<S> | ((..._: any[]) => VNode<S>)
 export type Content<S> = Stuff<S> | Stuff<S>[]
-export type ValidatedPropList<S, C> = ValidateCustomPayloads<S, C> & PropList<S>
+export type ValidatedPropList<S, C> = CustomPayloads<S, C> & Props<S>
 
-const stuff = <S>(x: Stuff<S>): MaybeVDOM<S> =>
+const stuff = <S>(x: Stuff<S>): MaybeVNode<S> =>
   typeof x === "number" || typeof x === "string" ? text(x)
   : typeof x === "function" ? x()
   : x
 
-const group = <S>(x: Content<S>): MaybeVDOM<S> | readonly MaybeVDOM<S>[] =>
+const group = <S>(x: Content<S>): MaybeVNode<S> | readonly MaybeVNode<S>[] =>
   Array.isArray(x) ? x.map(a => stuff(a)) : stuff<S>(x)
 
-const givenPropList = <S>(x: Content<S> | PropList<S>): x is PropList<S> =>
+const givenPropList = <S>(x: Content<S> | Props<S>): x is Props<S> =>
   typeof x === "object" && x != null && !Array.isArray(x) && !("node" in x)
 
 export const n = <C = unknown>(tag: string) => {
-  function node<S>(x: Content<S>): VDOM<S>
-  function node<S>(x: ValidatedPropList<S, C>, children?: Content<S>): VDOM<S>
-  function node<S>(x: ValidatedPropList<S, C> | Content<S>, children?: Content<S>): VDOM<S> {
+  function node<S>(x: Content<S>): VNode<S>
+  function node<S>(x: ValidatedPropList<S, C>, children?: Content<S>): VNode<S>
+  function node<S>(x: ValidatedPropList<S, C> | Content<S>, children?: Content<S>): VNode<S> {
     return givenPropList<S>(x)
       ? h<S>(tag, x, group(children))
       : h<S>(tag, {}, group(x))
@@ -29,9 +29,9 @@ export const n = <C = unknown>(tag: string) => {
 }
 
 export const typedN = <S>() => <C = unknown>(tag: string) => {
-  function node(x: Content<S>): VDOM<S>
-  function node(x: ValidatedPropList<S, C>, children?: Content<S>): VDOM<S>
-  function node(x: ValidatedPropList<S, C> | Content<S>, children?: Content<S>): VDOM<S> {
+  function node(x: Content<S>): VNode<S>
+  function node(x: ValidatedPropList<S, C>, children?: Content<S>): VNode<S>
+  function node(x: ValidatedPropList<S, C> | Content<S>, children?: Content<S>): VNode<S> {
     return givenPropList<S>(x)
       ? h<S>(tag, x, group(children))
       : h<S>(tag, {}, group(x))
@@ -149,7 +149,7 @@ export const isStuff = <S>(x: any): x is Stuff<S> =>
     || typeof x === "string"
     || isVDOM(x)
 
-export const isVDOM = <S>(x: any): x is VDOM<S> =>
+export const isVDOM = <S>(x: any): x is VNode<S> =>
   typeof x === "object" && "node" in x
 
 // TODO:

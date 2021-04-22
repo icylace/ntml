@@ -145,7 +145,10 @@ task:reset() {
 
   update_json '.dependencies = {} | .devDependencies = {}' ./package.json
 
-  npm install --save hyperapp
+  # TODO:
+  # npm install --save hyperapp
+  npm install --save icylace/hyperapp#types6
+
   npm install --save-dev typescript rollup eslint terser prettier
   npm install --save-dev eslint-plugin-import eslint-plugin-json eslint-plugin-node eslint-plugin-promise
   npm install --save-dev eslint-config-prettier eslint-plugin-prettier
