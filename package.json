@@ -40,7 +40,7 @@
     "watch:typescript": "./task.sh watch:typescript"
   },
   "dependencies": {
-    "hyperapp": "github:icylace/hyperapp#types6"
+    "hyperapp": "github:icylace/hyperapp#types8"
   },
   "publishConfig": {
     "access": "public"

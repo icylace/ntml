@@ -147,7 +147,7 @@ task:reset() {
 
   # TODO:
   # npm install --save hyperapp
-  npm install --save icylace/hyperapp#types6
+  npm install --save icylace/hyperapp#types8
 
   npm install --save-dev typescript rollup eslint terser prettier
   npm install --save-dev eslint-plugin-import eslint-plugin-json eslint-plugin-node eslint-plugin-promise
