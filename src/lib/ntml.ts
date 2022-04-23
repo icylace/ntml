@@ -1,10 +1,25 @@
 import type { CustomPayloads, MaybeVNode, Props, VNode } from "hyperapp"
-
 import { h, text } from "hyperapp"
 
-export type Stuff<S> = number | string | MaybeVNode<S> | ((..._: any[]) => VNode<S>)
-export type Content<S> = Stuff<S> | Stuff<S>[]
-export type ValidatedPropList<S, C> = CustomPayloads<S, C> & Props<S>
+export type { Content, Stuff, ValidatedPropList }
+export { isContent, isStuff, isVDOM, n, typedN }
+export {
+  a, b, i, p, q, s, br, dd, dl, dt, em, h1, h2, h3, h4, h5, h6, hr, li, ol, rp,
+  rt, td, th, tr, ul, bdi, bdo, col, del, dfn, div, img, ins, kbd, map, nav,
+  pre, rtc, sub, sup, svg, wbr, abbr, area, cite, code, data, form, main, mark,
+  ruby, samp, span, time, aside, audio, input, label, meter, param, small,
+  table, tbody, tfoot, thead, track, video, button, canvas, dialog, figure,
+  footer, header, iframe, legend, object, option, output, select, source,
+  strong, address, article, caption, details, section, summary, picture,
+  colgroup, datalist, fieldset, menuitem, optgroup, progress, textarea,
+  blockquote, figcaption
+}
+
+// -----------------------------------------------------------------------------
+
+type Stuff<S> = number | string | MaybeVNode<S> | ((..._: any[]) => VNode<S>)
+type Content<S> = Stuff<S> | Stuff<S>[]
+type ValidatedPropList<S, C> = CustomPayloads<S, C> & Props<S>
 
 const stuff = <S>(x: Stuff<S>): MaybeVNode<S> =>
   typeof x === "number" || typeof x === "string" ? text(x)
@@ -17,7 +32,7 @@ const group = <S>(x: Content<S>): MaybeVNode<S> | readonly MaybeVNode<S>[] =>
 const givenPropList = <S>(x: Content<S> | Props<S>): x is Props<S> =>
   typeof x === "object" && x != null && !Array.isArray(x) && !("node" in x)
 
-export const n = <C = unknown>(tag: string) => {
+const n = <C = unknown>(tag: string) => {
   function node<S>(x: Content<S>): VNode<S>
   function node<S>(x: ValidatedPropList<S, C>, children?: Content<S>): VNode<S>
   function node<S>(x: ValidatedPropList<S, C> | Content<S>, children?: Content<S>): VNode<S> {
@@ -28,7 +43,7 @@ export const n = <C = unknown>(tag: string) => {
   return node
 }
 
-export const typedN = <S>() => <C = unknown>(tag: string) => {
+const typedN = <S>() => <C = unknown>(tag: string) => {
   function node(x: Content<S>): VNode<S>
   function node(x: ValidatedPropList<S, C>, children?: Content<S>): VNode<S>
   function node(x: ValidatedPropList<S, C> | Content<S>, children?: Content<S>): VNode<S> {
@@ -39,109 +54,109 @@ export const typedN = <S>() => <C = unknown>(tag: string) => {
   return node
 }
 
-export const a = n("a")
-export const b = n("b")
-export const i = n("i")
-export const p = n("p")
-export const q = n("q")
-export const s = n("s")
-export const br = n("br")
-export const dd = n("dd")
-export const dl = n("dl")
-export const dt = n("dt")
-export const em = n("em")
-export const h1 = n("h1")
-export const h2 = n("h2")
-export const h3 = n("h3")
-export const h4 = n("h4")
-export const h5 = n("h5")
-export const h6 = n("h6")
-export const hr = n("hr")
-export const li = n("li")
-export const ol = n("ol")
-export const rp = n("rp")
-export const rt = n("rt")
-export const td = n("td")
-export const th = n("th")
-export const tr = n("tr")
-export const ul = n("ul")
-export const bdi = n("bdi")
-export const bdo = n("bdo")
-export const col = n("col")
-export const del = n("del")
-export const dfn = n("dfn")
-export const div = n("div")
-export const img = n("img")
-export const ins = n("ins")
-export const kbd = n("kbd")
-export const map = n("map")
-export const nav = n("nav")
-export const pre = n("pre")
-export const rtc = n("rtc")
-export const sub = n("sub")
-export const sup = n("sup")
-export const svg = n("svg")
-export const wbr = n("wbr")
-export const abbr = n("abbr")
-export const area = n("area")
-export const cite = n("cite")
-export const code = n("code")
-export const data = n("data")
-export const form = n("form")
-export const main = n("main")
-export const mark = n("mark")
-export const ruby = n("ruby")
-export const samp = n("samp")
-export const span = n("span")
-export const time = n("time")
-export const aside = n("aside")
-export const audio = n("audio")
-export const input = n("input")
-export const label = n("label")
-export const meter = n("meter")
-export const param = n("param")
-export const small = n("small")
-export const table = n("table")
-export const tbody = n("tbody")
-export const tfoot = n("tfoot")
-export const thead = n("thead")
-export const track = n("track")
-export const video = n("video")
-export const button = n("button")
-export const canvas = n("canvas")
-export const dialog = n("dialog")
-export const figure = n("figure")
-export const footer = n("footer")
-export const header = n("header")
-export const iframe = n("iframe")
-export const legend = n("legend")
-export const object = n("object")
-export const option = n("option")
-export const output = n("output")
-export const select = n("select")
-export const source = n("source")
-export const strong = n("strong")
-export const address = n("address")
-export const article = n("article")
-export const caption = n("caption")
-export const details = n("details")
-export const section = n("section")
-export const summary = n("summary")
-export const picture = n("picture")
-export const colgroup = n("colgroup")
-export const datalist = n("datalist")
-export const fieldset = n("fieldset")
-export const menuitem = n("menuitem")
-export const optgroup = n("optgroup")
-export const progress = n("progress")
-export const textarea = n("textarea")
-export const blockquote = n("blockquote")
-export const figcaption = n("figcaption")
+const a = n("a")
+const b = n("b")
+const i = n("i")
+const p = n("p")
+const q = n("q")
+const s = n("s")
+const br = n("br")
+const dd = n("dd")
+const dl = n("dl")
+const dt = n("dt")
+const em = n("em")
+const h1 = n("h1")
+const h2 = n("h2")
+const h3 = n("h3")
+const h4 = n("h4")
+const h5 = n("h5")
+const h6 = n("h6")
+const hr = n("hr")
+const li = n("li")
+const ol = n("ol")
+const rp = n("rp")
+const rt = n("rt")
+const td = n("td")
+const th = n("th")
+const tr = n("tr")
+const ul = n("ul")
+const bdi = n("bdi")
+const bdo = n("bdo")
+const col = n("col")
+const del = n("del")
+const dfn = n("dfn")
+const div = n("div")
+const img = n("img")
+const ins = n("ins")
+const kbd = n("kbd")
+const map = n("map")
+const nav = n("nav")
+const pre = n("pre")
+const rtc = n("rtc")
+const sub = n("sub")
+const sup = n("sup")
+const svg = n("svg")
+const wbr = n("wbr")
+const abbr = n("abbr")
+const area = n("area")
+const cite = n("cite")
+const code = n("code")
+const data = n("data")
+const form = n("form")
+const main = n("main")
+const mark = n("mark")
+const ruby = n("ruby")
+const samp = n("samp")
+const span = n("span")
+const time = n("time")
+const aside = n("aside")
+const audio = n("audio")
+const input = n("input")
+const label = n("label")
+const meter = n("meter")
+const param = n("param")
+const small = n("small")
+const table = n("table")
+const tbody = n("tbody")
+const tfoot = n("tfoot")
+const thead = n("thead")
+const track = n("track")
+const video = n("video")
+const button = n("button")
+const canvas = n("canvas")
+const dialog = n("dialog")
+const figure = n("figure")
+const footer = n("footer")
+const header = n("header")
+const iframe = n("iframe")
+const legend = n("legend")
+const object = n("object")
+const option = n("option")
+const output = n("output")
+const select = n("select")
+const source = n("source")
+const strong = n("strong")
+const address = n("address")
+const article = n("article")
+const caption = n("caption")
+const details = n("details")
+const section = n("section")
+const summary = n("summary")
+const picture = n("picture")
+const colgroup = n("colgroup")
+const datalist = n("datalist")
+const fieldset = n("fieldset")
+const menuitem = n("menuitem")
+const optgroup = n("optgroup")
+const progress = n("progress")
+const textarea = n("textarea")
+const blockquote = n("blockquote")
+const figcaption = n("figcaption")
 
-export const isContent = <S>(x: any): x is Content<S> =>
+const isContent = <S>(x: any): x is Content<S> =>
   Array.isArray(x) ? x.every(isStuff) : isStuff(x)
 
-export const isStuff = <S>(x: any): x is Stuff<S> =>
+const isStuff = <S>(x: any): x is Stuff<S> =>
   x == null
     || typeof x === "boolean"
     || typeof x === "function"
@@ -149,7 +164,7 @@ export const isStuff = <S>(x: any): x is Stuff<S> =>
     || typeof x === "string"
     || isVDOM(x)
 
-export const isVDOM = <S>(x: any): x is VNode<S> =>
+const isVDOM = <S>(x: any): x is VNode<S> =>
   typeof x === "object" && "node" in x
 
 // TODO:

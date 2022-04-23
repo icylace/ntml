@@ -8,8 +8,8 @@ const { resolve } = require("path")
 export default defineConfig({
   build: {
     lib: {
-      entry: resolve(__dirname, "./src/lib/eyepiece.ts"),
-      name: "uy",
+      entry: resolve(__dirname, "./src/lib/ntml.ts"),
+      name: "ntml",
     },
   },
 })

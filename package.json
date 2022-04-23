@@ -26,7 +26,7 @@
   "module": "./dist/ntml.es.js",
   "types": "./dist/ntml.d.ts",
   "scripts": {
-    "build": "./task.sh build:dev",
+    "build": "./task.sh build",
     "check": "./task.sh check",
     "clean": "./task.sh clean",
     "dev": "./task.sh dev",

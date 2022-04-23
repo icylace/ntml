@@ -1,7 +1,7 @@
 import type { VDOM } from "hyperapp"
 
 import { expectType } from "tsd"
-import { n, typedN } from "../src/index"
+import { n, typedN } from "../src/lib/ntml"
 
 type State = { foo: number }
 
