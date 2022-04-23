@@ -1,14 +1,28 @@
 #!/usr/bin/env bash
 
+update_json() {
+  local filter="$1"
+  local file="$2"
+  local tmp="$(mktemp)"
+
+  if [ ! -f "$file" ] ; then
+    echo '{}' > "$file"
+  fi
+
+  jq "$filter" "$file" > "$tmp" && mv -f "$tmp" "$file"
+}
+
+# ------------------------------------------------------------------------------
+
 task:index() {
   local tasks=(
-    'build:dev'
-    'build:prod'
+    'build'
     'check'
     'clean'
+    'dev'
     'lint'
-    'lint:fix'
-    'lint:fix-dry-run'
+    'preview'
+    'reinstall'
     'release'
     'reset'
     'test'
@@ -23,52 +37,23 @@ task:index() {
 
 # ------------------------------------------------------------------------------
 
-task:build:dev() {
-  task:clean
-
-  echo
-  echo "Compiling TypeScript for development..."
-  npx tsc --build
-
-  # Exit if errors found.
-  [ $? != 0 ] && return
-
-  npx rollup --config
-
-  echo
-  echo "Copying compiled JavaScript to the distribution folder..."
-  # https://stackoverflow.com/a/1313688/1935675
-  rsync --archive ./output/typescript/ ./dist --exclude=tsconfig.tsbuildinfo
-}
-
-# ------------------------------------------------------------------------------
-
-task:build:prod() {
+task:build() {
   task:clean
 
   echo
   echo "Compiling TypeScript for production..."
-  npx tsc --build --incremental false
-
-  # Exit if errors found.
-  [ $? != 0 ] && return
-
-  npx rollup --config --environment prod
+  npx vite build
 
   echo
-  echo "Copying compiled JavaScript to the distribution folder..."
-  # https://stackoverflow.com/a/1313688
-  rsync --archive ./output/typescript/ ./dist --exclude=tsconfig.tsbuildinfo
+  echo "Generating types definition file..."
+  npx tsup ./src/lib/ntml.ts --dts-only
+  # npx tsup ./src/lib/ntml.ts --dts-only --legacy-output
+  # https://github.com/vitejs/vite/issues/3461#issuecomment-857125201
 
   echo
   echo "Minifying and gzipping ES modules..."
-  npx terser --ecma 6 --compress --mangle --module --output ./dist/index.esm.min.js -- ./dist/index.esm.js
-  gzip --best --to-stdout ./dist/index.esm.min.js > ./dist/index.esm.min.js.gz
-
-  # echo
-  # echo "Minifying and gzipping UMD modules..."
-  # npx terser --ecma 6 --compress --mangle --output ./dist/index.umd.min.js -- ./dist/index.umd.js
-  # gzip --best --to-stdout ./dist/index.umd.min.js > ./dist/index.umd.min.js.gz
+  npx terser --ecma 6 --compress --mangle --module --output ./dist/ntml.es.min.js -- ./dist/ntml.es.js
+  gzip --best --to-stdout ./dist/ntml.es.min.js > ./dist/ntml.es.min.js.gz
 }
 
 # ------------------------------------------------------------------------------
@@ -84,7 +69,13 @@ task:check() {
 task:clean() {
   echo
   echo "Cleaning the distribution folder..."
-  rm -fr ./dist && mkdir ./dist
+  rm -fr ./dist
+}
+
+# ------------------------------------------------------------------------------
+
+task:dev() {
+  npx vite
 }
 
 # ------------------------------------------------------------------------------
@@ -97,74 +88,86 @@ task:lint() {
 
 # ------------------------------------------------------------------------------
 
-task:lint:fix() {
-  echo
-  echo "Linting and automatically fixing as much as possible..."
-  npx eslint ./src --ext .js,.jsx,.ts,.tsx --fix
+task:preview() {
+  npx vite preview
 }
 
 # ------------------------------------------------------------------------------
 
-task:lint:fix-dry-run() {
+task:reinstall() {
   echo
-  echo "Linting and doing a dry-run of automatically fixing as much as possible..."
-  npx eslint ./src --ext .js,.jsx,.ts,.tsx --fix-dry-run
+  echo "Reinstalling dependencies..."
+
+  rm ./package-lock.json
+  rm -fr ./node_modules
+
+  update_json '.dependencies = {} | .devDependencies = {}' ./package.json
+
+  local dev_modules=()
+
+  # Language
+  dev_modules+=('typescript')
+  dev_modules+=('terser')
+  dev_modules+=('tsup')
+
+  # Linting
+  dev_modules+=('eslint')
+  dev_modules+=('@typescript-eslint/parser')
+  dev_modules+=('@typescript-eslint/eslint-plugin')
+  # dev_modules+=('eslint-plugin-import')
+  # dev_modules+=('eslint-plugin-json')
+  # dev_modules+=('eslint-plugin-node')
+  # dev_modules+=('eslint-plugin-promise')
+  # dev_modules+=('eslint-config-prettier')
+  # dev_modules+=('eslint-plugin-prettier')
+  # dev_modules+=('eslint-config-standard')
+  # dev_modules+=('eslint-plugin-standard')
+  # dev_modules+=('eslint-import-resolver-typescript')
+  # dev_modules+=('prettier')
+
+  # Testing
+  dev_modules+=('tsd')
+  # dev_modules+=('jest')
+  # dev_modules+=('@types/jest')
+  # dev_modules+=('ts-jest')
+  # dev_modules+=('fast-check')
+
+  # Building
+  dev_modules+=('rollup')
+  dev_modules+=('vite')
+
+  npm install --save-dev "${dev_modules[@]}"
+
+  local modules=()
+
+  modules+=('hyperapp')
+
+  npm install --save "${modules[@]}"
 }
 
 # ------------------------------------------------------------------------------
 
 # https://github.com/sindresorhus/np#release-script
 task:release() {
+  task:build
   echo
   echo "Releasing..."
-  np
+  np --no-2fa
 }
 
 # ------------------------------------------------------------------------------
 
-# From `webdev-scaffolding`.
-update_json() {
-  local filter="$1"
-  local file="$2"
-  local tmp="$(mktemp)"
-
-  if [ ! -f "$file" ] ; then
-    echo '{}' > "$file"
-  fi
-
-  jq "$filter" "$file" > "$tmp" && mv -f "$tmp" "$file"
-}
-
 task:reset() {
-  echo
-  echo "Resetting dependencies..."
-
-  rm ./package-lock.json
-  rm -fr ./node_modules
-  rm -fr ./output
-
-  update_json '.dependencies = {} | .devDependencies = {}' ./package.json
-
-  npm install --save hyperapp
-  npm install --save-dev typescript rollup eslint terser prettier
-  npm install --save-dev eslint-plugin-import eslint-plugin-json eslint-plugin-node eslint-plugin-promise
-  npm install --save-dev eslint-config-prettier eslint-plugin-prettier
-  npm install --save-dev eslint-config-standard eslint-plugin-standard
-  npm install --save-dev eslint-import-resolver-typescript
-  npm install --save-dev @typescript-eslint/eslint-plugin @typescript-eslint/parser
-  npm install --save-dev tsd
-  # npm install --save-dev jest ts-jest
-
+  task:reinstall
   task:clean
 }
 
 # ------------------------------------------------------------------------------
 
 task:test() {
-  return
-
   # TODO:
-  # echo "Error: no test specified" && exit 1
+  return
+  # npx jest
 }
 
 # ------------------------------------------------------------------------------

@@ -5,7 +5,7 @@
   "keywords": [
     "hyperapp"
   ],
-  "license": "ISC",
+  "license": "MIT",
   "homepage": "https://github.com/icylace/ntml",
   "repository": {
     "type": "git",
@@ -20,27 +20,22 @@
   "files": [
     "dist"
   ],
-  "main": "./dist/index.js",
-  "browser": "./dist/index.esm.js",
-  "unpkg": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/ntml.es.js",
+  "browser": "./dist/ntml.es.js",
+  "unpkg": "./dist/ntml.es.js",
+  "module": "./dist/ntml.es.js",
+  "types": "./dist/ntml.d.ts",
   "scripts": {
-    "build:dev": "./task.sh build:dev",
-    "build:prod": "./task.sh build:prod",
+    "build": "./task.sh build:dev",
     "check": "./task.sh check",
     "clean": "./task.sh clean",
+    "dev": "./task.sh dev",
     "lint": "./task.sh lint",
-    "lint:fix": "./task.sh lint:fix",
-    "lint:fix-dry-run": "./task.sh lint:fix-dry-run",
+    "preview": "./task.sh preview",
+    "reinstall": "./task.sh reinstall",
     "release": "./task.sh release",
     "reset": "./task.sh reset",
-    "test": "./task.sh test",
-    "watch:rollup": "./task.sh watch:rollup",
-    "watch:typescript": "./task.sh watch:typescript"
-  },
-  "dependencies": {
-    "hyperapp": "^2.0.18"
+    "test": "./task.sh test"
   },
   "publishConfig": {
     "access": "public"
@@ -49,22 +44,17 @@
     "directory": "test"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.25.0",
-    "@typescript-eslint/parser": "^4.25.0",
-    "eslint": "^7.27.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-config-standard": "^16.0.3",
-    "eslint-import-resolver-typescript": "^2.4.0",
-    "eslint-plugin-import": "^2.23.4",
-    "eslint-plugin-json": "^3.0.0",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-prettier": "^3.4.0",
-    "eslint-plugin-promise": "^5.1.0",
-    "eslint-plugin-standard": "^5.0.0",
-    "prettier": "^2.3.0",
-    "rollup": "^2.50.5",
-    "terser": "^5.7.0",
-    "tsd": "^0.16.0",
-    "typescript": "^4.3.2"
+    "@typescript-eslint/eslint-plugin": "^5.20.0",
+    "@typescript-eslint/parser": "^5.20.0",
+    "eslint": "^8.14.0",
+    "rollup": "^2.70.2",
+    "terser": "^5.12.1",
+    "tsd": "^0.20.0",
+    "tsup": "^5.12.6",
+    "typescript": "^4.6.3",
+    "vite": "^2.9.5"
+  },
+  "dependencies": {
+    "hyperapp": "^2.0.22"
   }
 }
