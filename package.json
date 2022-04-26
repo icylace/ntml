@@ -20,7 +20,7 @@
   "files": [
     "dist"
   ],
-  "main": "./dist/ntml.es.js",
+  "main": "./dist/ntml.umd.js",
   "browser": "./dist/ntml.es.js",
   "unpkg": "./dist/ntml.es.js",
   "module": "./dist/ntml.es.js",
