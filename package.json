@@ -25,6 +25,12 @@
   "unpkg": "./dist/ntml.es.js",
   "module": "./dist/ntml.es.js",
   "types": "./dist/ntml.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/ntml.es.js",
+      "require": "./dist/ntml.umd.js"
+    }
+  },
   "scripts": {
     "build": "./task.sh build",
     "check": "./task.sh check",
